@@ -1,38 +1,37 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.container {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  justify-content: space-between; /* Distribute equal space between the items */
+  align-items: center; /* Vertically center align items */
+  margin: 20px 0;
+  flex-direction: row;
 }
 
-.App-link {
-  color: #61dafb;
+select {
+  flex: 1; /* Make each select box take equal space */
+  margin: 0 10px; /* Add margin between the select boxes */
+  padding: 10px; /* Ensure uniform padding */
+  font-size: 1em;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  height: 45px; /* Equal height for all select boxes */
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+label {
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+h1 {
+  text-align: center;
+  font-size: 2em;
+  margin-bottom: 20px;
+  font-family: Arial, sans-serif;
+}
+
+h3 {
+  margin-top: 30px;
+  font-size: 1.2em;
+  text-align: center;
+  font-weight: normal;
+  font-family: Arial, sans-serif;
 }
