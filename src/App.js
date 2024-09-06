@@ -14,60 +14,35 @@ const LocationSelector = () => {
   const [isStateEnabled, setIsStateEnabled] = useState(false);
   const [isCityEnabled, setIsCityEnabled] = useState(false);
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  // Fetch countries on component mount
+  
   useEffect(() => {
-    setLoading(true);
     axios.get('https://crio-location-selector.onrender.com/countries')
-      .then(response => {
-        setCountries(response.data);
-        setLoading(false);
-      })
-      .catch(error => {
-        console.error('Error fetching countries:', error);
-        setError('Failed to load countries');
-        setLoading(false);
-      });
+      .then(response => setCountries(response.data))
+      .catch(error => console.error('Error fetching countries:', error));
   }, []);
 
-  // Fetch states when a country is selected
   useEffect(() => {
     if (selectedCountry) {
-      setLoading(true);
       axios.get(`https://crio-location-selector.onrender.com/country=${selectedCountry}/states`)
         .then(response => {
           setStates(response.data);
           setIsStateEnabled(true);
           setSelectedState(''); 
           setIsCityEnabled(false); 
-          setCities([]); // Clear cities when country changes
-          setLoading(false);
         })
-        .catch(error => {
-          console.error('Error fetching states:', error);
-          setError('Failed to load states');
-          setLoading(false);
-        });
+        .catch(error => console.error('Error fetching states:', error));
     }
   }, [selectedCountry]);
 
-  // Fetch cities when a state is selected
+
   useEffect(() => {
     if (selectedCountry && selectedState) {
-      setLoading(true);
       axios.get(`https://crio-location-selector.onrender.com/country=${selectedCountry}/state=${selectedState}/cities`)
         .then(response => {
           setCities(response.data);
           setIsCityEnabled(true); 
-          setLoading(false);
         })
-        .catch(error => {
-          console.error('Error fetching cities:', error);
-          setError('Failed to load cities');
-          setLoading(false);
-        });
+        .catch(error => console.error('Error fetching cities:', error));
     }
   }, [selectedState]);
 
@@ -86,8 +61,6 @@ const LocationSelector = () => {
   return (
     <div>
       <h1>Select Location</h1>
-      {loading && <p>Loading...</p>}
-      {error && <p>{error}</p>}
       <div>
         <label>Country:</label>
         <select onChange={handleCountryChange} value={selectedCountry}>
