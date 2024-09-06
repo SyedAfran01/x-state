@@ -14,50 +14,63 @@ const LocationSelector = () => {
   const [isStateEnabled, setIsStateEnabled] = useState(false);
   const [isCityEnabled, setIsCityEnabled] = useState(false);
 
-  // Fetch all countries on initial render
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
+    setLoading(true);
     axios.get('https://crio-location-selector.onrender.com/countries')
-      .then(response => setCountries(response.data))
-      .catch(error => console.error('Error fetching countries:', error));
+      .then(response => {
+        setCountries(response.data);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error('Error fetching countries:', error);
+        setError('Failed to load countries');
+        setLoading(false);
+      });
   }, []);
 
-  // Fetch states based on selected country
   useEffect(() => {
     if (selectedCountry) {
       axios.get(`https://crio-location-selector.onrender.com/country=${selectedCountry}/states`)
-        .then(response => setStates(response.data))
+        .then(response => {
+          setStates(response.data);
+          setIsStateEnabled(true);
+          setSelectedState(''); 
+          setIsCityEnabled(false); 
+        })
         .catch(error => console.error('Error fetching states:', error));
     }
   }, [selectedCountry]);
 
-  // Fetch cities based on selected state
   useEffect(() => {
     if (selectedCountry && selectedState) {
       axios.get(`https://crio-location-selector.onrender.com/country=${selectedCountry}/state=${selectedState}/cities`)
-        .then(response => setCities(response.data))
+        .then(response => {
+          setCities(response.data);
+          setIsCityEnabled(true); 
+        })
         .catch(error => console.error('Error fetching cities:', error));
     }
   }, [selectedState]);
 
   const handleCountryChange = (e) => {
     setSelectedCountry(e.target.value);
-    setIsStateEnabled(true); // Enable state dropdown
-    setSelectedState(''); // Reset state selection
-    setIsCityEnabled(false); // Disable city dropdown until state is selected
   };
 
   const handleStateChange = (e) => {
     setSelectedState(e.target.value);
-    setIsCityEnabled(true); // Enable city dropdown
   };
 
   const handleCityChange = (e) => {
     setSelectedCity(e.target.value);
   };
-
   return (
     <div>
       <h1>Select Location</h1>
+      {loading && <p>Loading...</p>}
+      {error && <p>{error}</p>}
       <div>
         <label>Country:</label>
         <select onChange={handleCountryChange} value={selectedCountry}>
