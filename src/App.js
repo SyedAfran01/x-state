@@ -14,37 +14,65 @@ const LocationSelector = () => {
   const [isStateEnabled, setIsStateEnabled] = useState(false);
   const [isCityEnabled, setIsCityEnabled] = useState(false);
 
-  
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+
   useEffect(() => {
+    setLoading(true);
+    setError(null); 
     axios.get('https://crio-location-selector.onrender.com/countries')
-      .then(response => setCountries(response.data))
-      .catch(error => console.error('Error fetching countries:', error));
+      .then(response => {
+        setCountries(response.data);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error('Error fetching countries:', error);
+        setError('Failed to load countries. Please try again later.');
+        setLoading(false);
+      });
   }, []);
 
   useEffect(() => {
     if (selectedCountry) {
+      setLoading(true);
+      setError(null); 
       axios.get(`https://crio-location-selector.onrender.com/country=${selectedCountry}/states`)
         .then(response => {
           setStates(response.data);
           setIsStateEnabled(true);
           setSelectedState(''); 
           setIsCityEnabled(false); 
+          setCities([]); 
+          setLoading(false);
         })
-        .catch(error => console.error('Error fetching states:', error));
+        .catch(error => {
+          console.error('Error fetching states:', error);
+          setError('Failed to load states. Please try again later.');
+          setLoading(false);
+        });
     }
   }, [selectedCountry]);
 
 
   useEffect(() => {
     if (selectedCountry && selectedState) {
+      setLoading(true);
+      setError(null);
       axios.get(`https://crio-location-selector.onrender.com/country=${selectedCountry}/state=${selectedState}/cities`)
         .then(response => {
           setCities(response.data);
           setIsCityEnabled(true); 
+          setLoading(false);
         })
-        .catch(error => console.error('Error fetching cities:', error));
+        .catch(error => {
+          console.error('Error fetching cities:', error);
+          setError('Failed to load cities. Please try again later.');
+          setLoading(false);
+        });
     }
   }, [selectedState]);
+
 
   const handleCountryChange = (e) => {
     setSelectedCountry(e.target.value);
@@ -61,6 +89,9 @@ const LocationSelector = () => {
   return (
     <div>
       <h1>Select Location</h1>
+      {loading && <p>Loading...</p>}
+      {error && <p className="error-message">{error}</p>}
+      
       <div>
         <label>Country:</label>
         <select onChange={handleCountryChange} value={selectedCountry}>
@@ -93,7 +124,7 @@ const LocationSelector = () => {
 
       {selectedCountry && selectedState && selectedCity && (
         <div>
-          <h3>You selected: {selectedCity}, {selectedState}, {selectedCountry}</h3>
+          <h3>You selected {selectedCity}, {selectedState}, {selectedCountry}</h3>
         </div>
       )}
     </div>
