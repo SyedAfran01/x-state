@@ -17,7 +17,6 @@ const LocationSelector = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-
   useEffect(() => {
     setLoading(true);
     setError(null); 
@@ -29,6 +28,7 @@ const LocationSelector = () => {
       .catch(error => {
         console.error('Error fetching countries:', error);
         setError('Failed to load countries. Please try again later.');
+        setCountries([]); 
         setLoading(false);
       });
   }, []);
@@ -49,16 +49,16 @@ const LocationSelector = () => {
         .catch(error => {
           console.error('Error fetching states:', error);
           setError('Failed to load states. Please try again later.');
+          setStates([]); 
           setLoading(false);
         });
     }
   }, [selectedCountry]);
 
-
   useEffect(() => {
     if (selectedCountry && selectedState) {
       setLoading(true);
-      setError(null);
+      setError(null); 
       axios.get(`https://crio-location-selector.onrender.com/country=${selectedCountry}/state=${selectedState}/cities`)
         .then(response => {
           setCities(response.data);
@@ -68,11 +68,11 @@ const LocationSelector = () => {
         .catch(error => {
           console.error('Error fetching cities:', error);
           setError('Failed to load cities. Please try again later.');
+          setCities([]); 
           setLoading(false);
         });
     }
   }, [selectedState]);
-
 
   const handleCountryChange = (e) => {
     setSelectedCountry(e.target.value);
@@ -94,9 +94,9 @@ const LocationSelector = () => {
       
       <div>
         <label>Country:</label>
-        <select onChange={handleCountryChange} value={selectedCountry}>
+        <select onChange={handleCountryChange} value={selectedCountry} disabled={error !== null}>
           <option value="">Select Country</option>
-          {countries.map((country) => (
+          {countries.length > 0 && countries.map((country) => (
             <option key={country} value={country}>{country}</option>
           ))}
         </select>
@@ -104,9 +104,9 @@ const LocationSelector = () => {
 
       <div>
         <label>State:</label>
-        <select onChange={handleStateChange} value={selectedState} disabled={!isStateEnabled}>
+        <select onChange={handleStateChange} value={selectedState} disabled={!isStateEnabled || error !== null}>
           <option value="">Select State</option>
-          {states.map((state) => (
+          {states.length > 0 && states.map((state) => (
             <option key={state} value={state}>{state}</option>
           ))}
         </select>
@@ -114,9 +114,9 @@ const LocationSelector = () => {
 
       <div>
         <label>City:</label>
-        <select onChange={handleCityChange} value={selectedCity} disabled={!isCityEnabled}>
+        <select onChange={handleCityChange} value={selectedCity} disabled={!isCityEnabled || error !== null}>
           <option value="">Select City</option>
-          {cities.map((city) => (
+          {cities.length > 0 && cities.map((city) => (
             <option key={city} value={city}>{city}</option>
           ))}
         </select>
